@@ -1,5 +1,7 @@
 package com.example.javafx;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
@@ -9,6 +11,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.Random;
@@ -32,6 +35,17 @@ public class HelloApplication extends Application {
         drawPrimitiveFace();
 
         stage.show();
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.1), event -> {
+            gc.clearRect(0, 0, 600, 600);
+            try {
+                drawPrimitiveFace();
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }));
+        timeline.setCycleCount(360);
+        timeline.play();
+
     }
 
     public static int getRandomInt(){
@@ -41,18 +55,29 @@ public class HelloApplication extends Application {
 
     public static void drawPrimitiveFace() {
         //Random boolean som afgør om vores mand er sur eller glad.
-        boolean happy = new Random().nextBoolean();
+        boolean happy = randomboolean();
+        boolean hasGlasses = randomboolean();
+        drawEars();
         drawShape();
         drawMouth(50, happy);
         drawEyes(happy);
+        if (hasGlasses == true) {
+            drawGoogles();
+        }
         drawNose();
         drawBody();
         drawHair();
     }
 
+    public static void drawEars(){
+        gc.setFill(Color.rgb(255, 220, 177));
+        gc.fillOval(130, 270, 40, 40);
+
+        gc.fillOval(430, 270, 40, 40);
+
+    }
     public static void drawShape() {
         //Ansigtet formes med en kaukasisk hudfarve :)
-        gc.setFill(Color.rgb(255, 220, 177));
         gc.fillOval(150, 150, 300, 300);
     }
 
@@ -65,6 +90,8 @@ public class HelloApplication extends Application {
         gc.strokeLine(300,550, 250, 590 ); //Left leg
 
     }
+
+
 
     public static void drawNose(){
         //Næsen tegnes med 2 næsebor
@@ -106,15 +133,68 @@ public class HelloApplication extends Application {
             gc.strokeLine(210, 220, 250, 210);
             gc.strokeLine(390, 220, 350, 210);
         }
+
+
+    }
+
+    public static void drawGoogles(){
+        gc.strokeOval(210, 215, 40, 30); //Venstre brillestel
+        gc.strokeOval(350, 215, 40, 30); //Højre brillestel
+        gc.strokeLine(250, 230, 350, 230); //Stel mellem øjnene
+        gc.strokeLine(210, 230, 155, 270); //Stel fra venstre øje til venstre øre
+        gc.strokeLine(390, 230, 445, 270); //Stel fra højre øje til højre øre
+
     }
 
     public static void drawHair (){
-        int x = 1;
-        int y = 1;
-        for (int i = 0; i < 20; i++){
-            gc.strokeLine(170 + x, 225 - x, 160 + x, 215 - x);
+        int whichHaircut = new Random().nextInt(3);
+        if (whichHaircut == 0){
+            drawMonkHair();
+        }
+        else if (whichHaircut == 1 ){
+            drawBadMohawk();
+        }
+        else if (whichHaircut == 2){
+            drawBabyCurl();
+
+        }
+    }
+
+    public static void drawBadMohawk() {
+        double x = 0;
+        for (int i = 0; i < 20; i++) {
+            gc.strokeLine(250 + x, 160, 240 + x, 140);
             x = x + 5;
         }
+    }
+
+    public static void drawBabyCurl(){
+        gc.strokeOval(300, 125, 20,20);
+        gc.strokeArc(300, 125, 20, 30, 90, 180, ArcType.OPEN);
+        gc.strokeArc(300, 115, 20, 30, 45, 225, ArcType.OPEN);
+    }
+
+    public static void drawMonkHair(){
+        double x = 0;
+        double y = 0;
+        for (int i = 0; i < 14; i++){
+            gc.strokeLine(160 + x, 200, 160 + x, 240 - y);
+            x = x + 2;
+            y = y + 3;
+        }
+        x = 0;
+        y = 0;
+        for (int i = 0; i < 14; i++) {
+            gc.strokeLine(440 - x, 200, 440 - x, 240 - y);
+            x = x + 2;
+            y = y + 3;
+        }
+
+    }
+
+    public static boolean randomboolean(){
+        boolean randomBoolean = new Random().nextBoolean();
+        return randomBoolean;
     }
 
     public static void main(String[] args) {
